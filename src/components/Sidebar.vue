@@ -2,24 +2,26 @@
   <div @click.self="close" class="fixed z-20 inset-0 fscreen">
     <div class="w-[80%] h-full flex flex-col p-2 bg-base-200 shadow-xl">
       <!-- Banner -->
-      <pre class="pt-3 px-2 flex items-center justify-center text-[9px]">
+      <button @click="goHome">
+        <pre class="pt-3 px-2 flex items-center justify-center text-[9px]">
   ___________________  _____  _________ ___________
  /   _____/\______   \/  _  \ \_   ___ \\_   _____/
  \_____  \  |     ___/  /_\  \/    \  \/ |    __)_ 
  /        \ |    |  /    |    \     \____|        \
 /_______  / |____|  \____|__  /\______  /_______  /
         \/                  \/        \/        \/ </pre
-      >
-      <!-- Banner -->
-      <pre class="px-2 flex items-center justify-center text-[9px]">
+        >
+        <!-- Banner -->
+        <pre class="px-2 flex items-center justify-center text-[9px]">
 _________   ___ ___    ________________
 \_   ___ \ /   |   \  /  _  \__    ___/
 /    \  \//    ~    \/  /_\  \|    |   
 \     \___\    Y    /    |    \    |   
  \______  /\___|_  /\____|__  /____|   
         \/       \/         \/         
-      </pre>
-
+      </pre
+        >
+      </button>
       <!-- themes -->
       <div class="flex flex-col overflow-hidden text-xs">
         <div class="divider m-0 uppercase">Theme - {{ currentTheme }}</div>
@@ -218,6 +220,12 @@ _________   ___ ___    ________________
     router.push({
       name: "space",
       params: { name }
+    });
+  }
+  
+  function goHome() {
+    router.push({
+      name: "home",
     });
   }
 

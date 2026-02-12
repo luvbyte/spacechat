@@ -1,3 +1,5 @@
+const DEFAULT_USERNAME = "Someone";
+
 function bytesToBase64(bytes) {
   return btoa(String.fromCharCode(...bytes));
 }
@@ -133,4 +135,12 @@ export function getClientId() {
   const id = "u0" + Math.floor(100000 + Math.random() * 900000);
   localStorage.setItem("space-chat-clientID", id);
   return id;
+}
+
+export function getClientUsername() {
+  const existing = localStorage.getItem("space-chat-userName");
+  if (existing) return existing;
+
+  localStorage.setItem("space-chat-userName", DEFAULT_USERNAME);
+  return DEFAULT_USERNAME;
 }

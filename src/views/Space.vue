@@ -3,7 +3,7 @@
   import { useRoute, useRouter } from "vue-router";
   import { supabase } from "@/utils/supabase.js";
 
-  import { extractYouTubeId, getClientId } from "@/api";
+  import { extractYouTubeId, getClientId, getClientUsername } from "@/api";
 
   import Sidebar from "@/components/Sidebar.vue";
   import Bubble from "@/components/Bubble.vue";
@@ -53,9 +53,14 @@
   const inputText = ref("");
 
   // ---------------- usernames
-  const myName = ref("someone");
+  const myName = ref(getClientUsername());
 
   // FUNCTIONS
+  function changeUsername(userName) {
+    localStorage.setItem("space-chat-userName", userName);
+    myName.value = userName;
+  }
+
   // Video
   async function executeAction({ action, time }) {
     if (!player.value) return;
@@ -313,7 +318,7 @@
         broadcastVideo("init", 0, videoId);
 
         message.type = "text";
-        message.content = "▶ Started a video";
+        message.content = "Started a video 😎";
       }
 
       // AUDIO: #audio:url caption (development)
@@ -391,6 +396,9 @@
 
     // cleanup old channel (ONLY unsubscribe)
     if (spaceChannel.value) {
+      if (videoState.value.visible) {
+        await resetVideo("Switched space... Video stopped...");
+      }
       await spaceChannel.value.unsubscribe();
       spaceChannel.value = null;
     }
@@ -431,7 +439,7 @@
         }
 
         if (videoState.value.visible && !hasControls.value && !hostId) {
-          resetVideo("Host disconnected. Video stopped.");
+          resetVideo("Host disconnected...Video stopped...");
         }
       });
 
@@ -595,7 +603,7 @@
       <Bubble v-for="(message, i) in messages" :key="i" :message />
     </div>
 
-    <InputBox :sendMessage :myName :updateName="name => (myName = name)" />
+    <InputBox :sendMessage :myName :updateName="changeUsername" />
 
     <!-- Sidebar -->
     <Transition name="slide-right">
