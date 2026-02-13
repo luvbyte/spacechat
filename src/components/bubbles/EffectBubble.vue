@@ -11,7 +11,7 @@
     <!-- overlays -->
     <div v-if="isConfetti" class="confetti-layer"></div>
     <div v-if="isEmojiRain" class="emoji-layer">
-      🧡💛💚💙💜🤎🖤🤍🩷🩵🩶💕💞💓💗💖💘💝
+      🧡💛💕💞💚💙💓💝💜🤎💖💘🖤🤍🩷🩵
     </div>
     <div v-if="isSparkle" class="sparkle-layer"></div>
     <div v-if="isShimmer" class="shimmer-layer"></div>
@@ -166,7 +166,8 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: radial-gradient(circle at 10% 10%, #ff0 2px, transparent 3px),
+    background:
+      radial-gradient(circle at 10% 10%, #ff0 2px, transparent 3px),
       radial-gradient(circle at 80% 20%, #0ff 2px, transparent 3px),
       radial-gradient(circle at 40% 70%, #f0f 2px, transparent 3px);
     animation: confetti 1.2s linear infinite;

@@ -144,3 +144,4 @@ export function getClientUsername() {
   localStorage.setItem("space-chat-userName", DEFAULT_USERNAME);
   return DEFAULT_USERNAME;
 }
+

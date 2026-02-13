@@ -8,7 +8,7 @@
       >
         <!-- USERNAME -->
         <div class="flex gap-2 items-center">
-          <h1 class="opacity-60">Name</h1>
+          <h1 class="opacity-80">Name</h1>
           <input
             :value="myName"
             @input="updateName($event.target.value)"
@@ -22,7 +22,7 @@
           <div
             v-for="name in msgTypes"
             :key="name"
-            class="badge badge-lg capitalize opacity-60"
+            class="badge badge-lg capitalize opacity-80"
             :class="activeMessageType === name ? 'badge-info' : 'badge-outline'"
             @mousedown.prevent="activeMessageType = name"
           >
@@ -38,7 +38,7 @@
           <div
             v-for="name in effects"
             :key="name"
-            class="badge badge-lg capitalize opacity-60"
+            class="badge badge-lg capitalize opacity-80"
             :class="activeEffectType === name ? 'badge-info' : 'badge-outline'"
             @mousedown.prevent="activeEffectType = name"
           >
@@ -57,7 +57,10 @@
           />
 
           <div class="flex gap-2 items-center">
-            <button class="btn btn-info btn-circle" @click="fileInput.click()">
+            <button
+              class="btn btn-sm btn-primary btn-soft"
+              @click="fileInput.click()"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -73,6 +76,8 @@
                   d="M12 10v9m0-9l3 3m-3-3l-3 3m8.5 2c1.519 0 2.5-1.231 2.5-2.75a2.75 2.75 0 0 0-2.016-2.65A5 5 0 0 0 8.37 8.108a3.5 3.5 0 0 0-1.87 6.746"
                 />
               </svg>
+
+              Gallery
             </button>
             <input
               v-model="imageUrlInput"
@@ -129,12 +134,13 @@
         v-model="inputText"
         @keyup.enter="sendText"
         placeholder="Type here…"
+        :disabled="!canSendMessage"
         class="flex-1 input rounded-full bg-base-200 border-base-300 focus:outline-none focus:ring-2 focus:ring-primary placeholder:opacity-60"
       />
 
       <button
         class="btn btn-primary btn-circle"
-        :disabled="uploading"
+        :disabled="uploading || !canSendMessage"
         @click="sendText"
       >
         <span v-if="uploading">...</span>
@@ -166,7 +172,12 @@
   const inputText = ref("");
   const showInputOptions = ref(false);
 
-  const props = defineProps(["sendMessage", "myName", "updateName"]);
+  const props = defineProps([
+    "canSendMessage",
+    "sendMessage",
+    "myName",
+    "updateName"
+  ]);
 
   const fileInput = ref(null);
   const imageUrlInput = ref("");

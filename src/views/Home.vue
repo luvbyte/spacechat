@@ -1,14 +1,7 @@
 <template>
-  <div data-theme="coffee" class="flex-1 bg-base-200 flex flex-col">
-    <!-- Navbar -->
-    <div class="navbar bg-base-100 shadow">
-      <div class="flex-1">
-        <span class="btn btn-ghost text-xl">SpaceChat</span>
-      </div>
-    </div>
-
+  <div class="flex-1 bg-base-200 flex flex-col">
     <main
-      class="flex-1 flex flex-col items-center md:justify-center mt-4 sm:mt-0 px-6 text-center"
+      class="flex-1 flex flex-col items-center md:justify-center mt-18 sm:mt-0 px-6 text-center"
     >
       <!-- Hero Section -->
       <div class="flex justify-center items-center py-4">
@@ -52,7 +45,22 @@
 
   const router = useRouter();
 
-  const space = ref("Earth");
+  function generateUniqueString() {
+    const chars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let result = "";
+
+    while (result.length < 4) {
+      const randomChar = chars[Math.floor(Math.random() * chars.length)];
+      if (!result.includes(randomChar)) {
+        result += randomChar;
+      }
+    }
+
+    return result;
+  }
+
+  const space = ref("Earth-" + generateUniqueString(4));
 
   function enterApp() {
     router.push({

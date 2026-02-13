@@ -1,3 +1,94 @@
+<template>
+  <div class="flex-1 flex flex-col overflow-hidden">
+    <!-- Space Join Bar -->
+    <div
+      class="p-2 py-3 bg-base-200 text-base-content flex items-center justify-between gap-2"
+    >
+      <button class="shrink-0 text-lg font-bold" @click="showSidebar = true">
+        ⌥ Space
+      </button>
+
+      <input
+        v-model="spaceInput"
+        @keyup.enter="changeSpace(spaceInput)"
+        class="input input-sm w-full sm:max-w-sm rounded-full bg-transparent focus:outline-none focus:ring-2 focus:ring-primary font-semibold opacity-60 focus:opacity-100"
+      />
+
+      <div class="flex gap-1 items-center">
+        <button
+          class="btn btn-sm btn-primary rounded-full px-5"
+          @click="changeSpace(spaceInput)"
+        >
+          Join
+        </button>
+        <button
+          class="btn btn-sm btn-info rounded-full px-5"
+          @click="inviteSpace"
+        >
+          Invite
+        </button>
+        <button class="btn btn-sm btn-secondary" @click="showSidebar = true">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+          >
+            <path
+              fill="currentColor"
+              d="M15.22 4.75L7.87 7.79l4.96 11.96l7.35-3.05zM11 10c-.55 0-1-.45-1-1s.45-1 1-1s1 .45 1 1s-.45 1-1 1"
+              opacity="0.3"
+            />
+            <path
+              fill="currentColor"
+              d="m3.87 11.18l-2.43 5.86c-.41 1.02.08 2.19 1.09 2.61l1.34.56zm18.16 4.77L17.07 3.98a2.01 2.01 0 0 0-1.81-1.23c-.26 0-.53.04-.79.15L7.1 5.95a2 2 0 0 0-1.08 2.6l4.96 11.97a2 2 0 0 0 2.6 1.08l7.36-3.05a1.994 1.994 0 0 0 1.09-2.6m-9.2 3.8L7.87 7.79l7.35-3.04h.01l4.95 11.95z"
+            />
+            <circle cx="11" cy="9" r="1" fill="currentColor" />
+            <path
+              fill="currentColor"
+              d="m9.33 21.75l-3.45-8.34v6.34c0 1.1.9 2 2 2z"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div
+      v-if="videoState.visible"
+      class="relative w-full bg-black aspect-video"
+    >
+      <div class="fscreen" id="yt-player"></div>
+    </div>
+
+    <!-- Chat Area -->
+    <div
+      ref="chatBox"
+      class="flex-1 flex flex-col overflow-y-auto overflow-x-hidden p-2 py-4 gap-3"
+    >
+      <Bubble v-for="(message, i) in messages" :key="i" :message />
+    </div>
+
+    <InputBox
+      :canSendMessage
+      :sendMessage
+      :myName
+      :updateName="changeUsername"
+    />
+
+    <!-- Sidebar -->
+    <div
+      class="fixed inset-0 z-20 full overflow-hidden"
+      @click.self="showSidebar = false"
+      :class="{ 'pointer-events-none -z-20': !showSidebar }"
+    >
+      <!-- SIDEBAR -->
+      <Transition name="slide-right">
+        <Sidebar v-show="showSidebar" :close="() => (showSidebar = false)" />
+      </Transition>
+    </div>
+  </div>
+</template>
+
 <script setup>
   import { ref, onBeforeMount, onBeforeUnmount, nextTick, watch } from "vue";
   import { useRoute, useRouter } from "vue-router";
@@ -17,8 +108,9 @@
 
   const spaceChannel = ref(null);
 
-  // video
+  // ---------------- video
   const canSendVideo = ref(false);
+  const canSendMessage = ref(false);
 
   const videoState = ref({
     visible: false,
@@ -55,13 +147,14 @@
   // ---------------- usernames
   const myName = ref(getClientUsername());
 
-  // FUNCTIONS
+  // Utils function
   function changeUsername(userName) {
     localStorage.setItem("space-chat-userName", userName);
     myName.value = userName;
   }
 
-  // Video
+  // ---------------- Video
+  // Video sync action
   async function executeAction({ action, time }) {
     if (!player.value) return;
 
@@ -87,6 +180,7 @@
     }, 400);
   }
 
+  // Sync video with host
   function startHostSync() {
     if (syncInterval) {
       clearInterval(syncInterval);
@@ -103,6 +197,7 @@
     }, 4000);
   }
 
+  // Broadcast video
   function broadcastVideo(action, time = 0, videoId = null, state = null) {
     if (!spaceChannel.value) return;
     if (!hasControls.value) return; // safety
@@ -119,6 +214,7 @@
     });
   }
 
+  // Initialize video player
   async function initPlayer(videoId, start = 0) {
     videoState.value.visible = true;
     videoState.value.videoId = videoId;
@@ -188,6 +284,7 @@
     });
   }
 
+  // on video
   async function onVideoEvent(msg) {
     const { action, time, videoId, state } = msg.payload;
 
@@ -241,7 +338,8 @@
     await executeAction({ action, time });
   }
 
-  async function resetVideo(reason = "Video stopped") {
+  // Reset current video if playing
+  async function resetVideo(reason = "Video stopped", removeHost = true) {
     if (player.value) {
       await player.value.destroy();
       player.value = null;
@@ -251,7 +349,7 @@
     videoState.value.videoId = null;
     videoState.value.playing = false;
 
-    if (spaceChannel.value) {
+    if (spaceChannel.value && removeHost) {
       spaceChannel.value.untrack();
     }
 
@@ -260,7 +358,10 @@
       syncInterval = null;
     }
 
-    hasControls.value = false;
+    if (removeHost) {
+      hasControls.value = false;
+    }
+
     playerReady.value = false;
     pendingAction = null;
 
@@ -270,8 +371,28 @@
       self: false,
       alert: true
     });
+
+    // Broadcast to others
+    broadcastMessage(reason);
   }
 
+  // ---------------- Message functions
+  // Broadcast message to everyone
+  function broadcastMessage(message) {
+    if (!spaceChannel.value) return;
+    spaceChannel.value.send({
+      event: "message",
+      type: "broadcast",
+      payload: { name: `${myName.value} (${clientId})`, text: message }
+    });
+  }
+
+  // System message (locally)
+  function systemMessage(message) {
+    addMessage({ name: "You", text: message, self: true, alert: true });
+  }
+
+  // Parse message
   function parseMessage(msg) {
     const message = {
       name: msg.name,
@@ -301,26 +422,6 @@
           message: rest
         };
       }
-      // Video
-      else if (commandPart.startsWith("video:")) {
-        if (player.value) return;
-
-        const url = commandPart.slice("video:".length);
-        const videoId = extractYouTubeId(url);
-
-        if (!videoId) {
-          message.type = "text";
-          message.content = "Invalid YouTube link";
-          return;
-        }
-
-        initPlayer(videoId, 0);
-        broadcastVideo("init", 0, videoId);
-
-        message.type = "text";
-        message.content = "Started a video 😎";
-      }
-
       // AUDIO: #audio:url caption (development)
       else if (commandPart.startsWith("audio:")) {
         const url = commandPart.slice("audio:".length);
@@ -349,6 +450,7 @@
     return message;
   }
 
+  // parse and add message to ChatBox
   function addMessage(msg) {
     // Parsing
     messages.value.push(parseMessage(msg));
@@ -358,6 +460,7 @@
     });
   }
 
+  // On message
   function onMessage(msg) {
     const payload = msg.payload;
 
@@ -369,6 +472,67 @@
     });
   }
 
+  // SEND MESSAGE (entry)
+  async function sendMessage(message) {
+    if (!canSendMessage.value) return;
+    if (!spaceChannel.value) return;
+    if (!message.trim()) return;
+
+    const msg = {
+      name: "You",
+      text: message,
+      self: true,
+      alert: false
+    };
+
+    // if video
+    if (message.startsWith("#video:")) {
+      if (!canSendVideo.value) return;
+
+      // url parsing
+      const url = message.replace("#video:", "").trim();
+
+      // Extract YT url
+      const videoId = extractYouTubeId(url);
+      if (!videoId) {
+        return systemMessage("Invalid url");
+      }
+
+      // For changing
+      const isHost = hasControls.value;
+      // If someone else is host → block
+      if (player.value && !isHost) {
+        return systemMessage("Can't play since a video is already playing.");
+      }
+
+      // Become host
+      hasControls.value = true;
+      spaceChannel.value.track({ role: "host" });
+
+      // ALWAYS reset locally (but keep host role)
+      if (player.value) {
+        await resetVideo("Switched video...", false);
+      } else {
+        // If starting video
+        await resetVideo("Started video...", false);
+      }
+
+      // Init locally
+      await initPlayer(videoId, 0);
+
+      // Broadcast to everyone
+      broadcastVideo("init", 0, videoId);
+
+      return; // stop further
+    }
+
+    // Broadcast to others
+    broadcastMessage(msg.text);
+    // Add locally
+    addMessage(msg);
+  }
+
+  // ---------------- Space functions
   async function inviteSpace() {
     const url = window.location.href;
 
@@ -387,7 +551,7 @@
     }
   }
 
-  // CHANGE SPACE
+  // Change space
   async function changeSpace(name) {
     if (!name) return;
 
@@ -450,60 +614,26 @@
 
       if (status === "SUBSCRIBED") {
         text = `You are in ${name} :)`;
+
+        canSendMessage.value = true;
       }
 
       if (status === "CLOSED") {
         text = `You left ${name}`;
+
+        canSendMessage.value = false;
       }
 
       if (status === "CHANNEL_ERROR") {
         text = `Something went wrong with ${name}`;
+
+        canSendMessage.value = false;
       }
 
       if (text) {
-        addMessage({
-          name: "System",
-          text,
-          self: true,
-          alert: true
-        });
+        systemMessage(text);
       }
     });
-  }
-
-  // SEND MESSAGE
-  function sendMessage(message) {
-    if (!message.trim()) return;
-    if (!spaceChannel.value) return;
-
-    // if video
-    if (message.startsWith("#video:")) {
-      if (player.value || !canSendVideo.value) return;
-
-      hasControls.value = true;
-      // Mark yourself as host
-      spaceChannel.value.track({ role: "host" });
-
-      if (player.value && playerReady.value) {
-        startHostSync();
-      }
-    }
-
-    const msg = {
-      name: "You",
-      text: message,
-      self: true,
-      alert: false
-    };
-
-    spaceChannel.value.send({
-      event: "message",
-      type: "broadcast",
-      payload: { name: `${myName.value} (${clientId})`, text: message }
-    });
-
-    addMessage(msg);
-    inputText.value = "";
   }
 
   onBeforeMount(() => {
@@ -541,73 +671,18 @@
   });
 </script>
 
-<template>
-  <div class="flex-1 flex flex-col bg-base-200 overflow-hidden">
-    <!-- Space Join Bar -->
-    <div
-      class="px-4 py-3 bg-base-100/80 backdrop-blur border-b border-base-300"
-    >
-      <div class="flex items-center gap-3">
-        <div class="flex items-center gap-2">
-          <button @click="showSidebar = true">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-            >
-              <path
-                fill="currentColor"
-                d="M4 18h16c.55 0 1-.45 1-1s-.45-1-1-1H4c-.55 0-1 .45-1 1s.45 1 1 1m0-5h16c.55 0 1-.45 1-1s-.45-1-1-1H4c-.55 0-1 .45-1 1s.45 1 1 1M3 7c0 .55.45 1 1 1h16c.55 0 1-.45 1-1s-.45-1-1-1H4c-.55 0-1 .45-1 1"
-              />
-            </svg>
-          </button>
+<style scoped>
+  .gradient-text {
+    font-weight: 600;
+    font-size: 18px;
+    display: inline-block;
 
-          <span class="font-semibold text-[17px]">Space</span>
-        </div>
+    background: linear-gradient(90deg, hsl(var(--p)), hsl(var(--s)));
 
-        <input
-          v-model="spaceInput"
-          class="input input-sm w-full rounded-full bg-transparent focus:outline-none focus:ring-2 focus:ring-primary"
-        />
+    -webkit-background-clip: text;
+    background-clip: text;
 
-        <div class="flex gap-2 items-center">
-          <button
-            class="btn btn-sm btn-primary rounded-full px-5"
-            @click="changeSpace(spaceInput)"
-          >
-            Join
-          </button>
-          <button
-            class="btn btn-sm btn-info rounded-full px-5"
-            @click="inviteSpace"
-          >
-            Invite
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div
-      v-if="videoState.visible"
-      class="relative w-full bg-black aspect-video"
-    >
-      <div class="fscreen" id="yt-player"></div>
-    </div>
-
-    <!-- Chat Area -->
-    <div
-      ref="chatBox"
-      class="flex-1 flex flex-col overflow-y-auto overflow-x-hidden p-2 py-4 gap-3 bg-base-200"
-    >
-      <Bubble v-for="(message, i) in messages" :key="i" :message />
-    </div>
-
-    <InputBox :sendMessage :myName :updateName="changeUsername" />
-
-    <!-- Sidebar -->
-    <Transition name="slide-right">
-      <Sidebar v-show="showSidebar" :close="() => (showSidebar = false)" />
-    </Transition>
-  </div>
-</template>
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+</style>
