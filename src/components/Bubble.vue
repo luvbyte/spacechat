@@ -1,7 +1,9 @@
 <template>
   <div>
-    <div v-if="message.alert" class="divider m-0 opacity-60 font-heading">
-      {{ message.content }}
+    <div v-if="message.alert" class="fade-in divider m-0 opacity-80 font-heading">
+      <div class="badge badge-sm badge-info">
+        {{ message.content }}
+      </div>
     </div>
     <!-- ROW -->
     <div
@@ -21,10 +23,7 @@
 
         <TextBubble v-if="message.type === 'text'" :message />
         <EffectBubble v-else-if="message.type === 'effect'" :message />
-        <ImageBubble
-          v-else-if="message.type === 'image'"
-          :message
-        />
+        <ImageBubble v-else-if="message.type === 'image'" :message />
         <AudioBubble v-else-if="message.type === 'audio'" :message />
         <SecretBubble v-else-if="message.type === 'secret'" :message />
       </div>

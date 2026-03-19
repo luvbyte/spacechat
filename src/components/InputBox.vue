@@ -15,6 +15,10 @@
             class="w-full input input-sm focus:outline-none opacity-60"
           />
         </div>
+        <!-- MESSAGE TYPE INFO -->
+        <div class="divider m-0 text-sm text-center opacity-60">
+          {{ msgTypeInfo[activeMessageType] }}
+        </div>
         <!-- MESSAGE TYPES -->
         <div
           class="flex flex-nowrap gap-2 shrink-0 overflow-x-auto scrollbar-hide font-heading"
@@ -190,6 +194,13 @@
   const secretKey = ref("");
 
   const msgTypes = ["text", "effect", "image", "secret", "video"];
+  const msgTypeInfo = {
+    text: "Text message",
+    effect: "Text message with Effects",
+    image: "Send an image",
+    secret: "Send secret message with key",
+    video: "Play YouTube Video using link"
+  };
 
   const effects = [
     "glow",

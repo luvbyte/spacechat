@@ -1,5 +1,5 @@
 <script setup>
-  import { onMounted } from "vue"
+  import { onMounted } from "vue";
   import { setDefaultTheme } from "@/api/config";
 
   onMounted(setDefaultTheme);

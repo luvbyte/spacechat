@@ -578,6 +578,8 @@
       });
     }
 
+    systemMessage(`Entering in ${name}`);
+
     const channel = supabase
       .channel(name, {
         config: {
