@@ -53,17 +53,17 @@
       </div>
     </div>
 
-    <div
-      v-if="videoState.visible"
-      class="relative w-full bg-black aspect-video"
-    >
-      <div class="fscreen" id="yt-player"></div>
+    <!-- Video -->
+    <div v-if="videoState.visible" class="w-full bg-black">
+      <div class="relative w-full md:w-1/2 md:mx-auto bg-black aspect-video">
+        <div class="fscreen" id="yt-player"></div>
+      </div>
     </div>
 
     <!-- Chat Area -->
     <div
       ref="chatBox"
-      class="flex-1 flex flex-col overflow-y-auto overflow-x-hidden p-2 py-4 gap-3"
+      class="flex-1 md:w-[80%] md:border-x border-base-content/20 md:mx-auto flex flex-col overflow-y-auto overflow-x-hidden p-2 py-4 gap-3"
     >
       <Bubble v-for="(message, i) in messages" :key="i" :message />
     </div>
