@@ -1,29 +1,24 @@
 <template>
-  <div class="bg-base-100/90 backdrop-blur border-t border-base-300 px-4 py-3">
+  <div class="bg-base-100/90 border-base-300 border-t px-4 py-3 backdrop-blur">
     <!-- OPTIONS PANEL -->
     <Transition name="slide-up">
-      <div
-        v-if="showInputOptions"
-        class="mb-2 pb-6 rounded flex flex-col gap-3"
-      >
+      <div v-if="showInputOptions" class="mb-2 flex flex-col gap-3 rounded pb-6">
         <!-- USERNAME -->
-        <div class="flex gap-2 items-center">
+        <div class="flex items-center gap-2">
           <h1 class="opacity-80">Name</h1>
           <input
             :value="myName"
-            @input="updateName($event.target.value)"
-            class="w-full input input-sm focus:outline-none opacity-60"
+            @input="updateName"
+            class="input input-sm w-full opacity-60 focus:outline-none"
           />
         </div>
         <!-- MESSAGE TYPE INFO -->
-        <div class="divider m-0 text-sm text-center opacity-60">
+        <div class="divider m-0 text-center text-sm opacity-60">
           {{ msgTypeInfo[activeMessageType] }}
         </div>
         <!-- MESSAGE TYPES -->
-        <div
-          class="flex flex-nowrap gap-2 shrink-0 overflow-x-auto scrollbar-hide font-heading"
-        >
-          <div
+        <div class="scrollbar-hide font-heading flex shrink-0 flex-nowrap gap-2 overflow-x-auto">
+          <button
             v-for="name in msgTypes"
             :key="name"
             class="badge badge-lg capitalize opacity-80"
@@ -31,15 +26,15 @@
             @mousedown.prevent="activeMessageType = name"
           >
             {{ name }}
-          </div>
+          </button>
         </div>
 
         <!-- EFFECT TYPES -->
         <div
           v-if="activeMessageType === 'effect'"
-          class="flex flex-nowrap gap-2 shrink-0 overflow-x-auto scrollbar-hide font-heading"
+          class="scrollbar-hide font-heading flex shrink-0 flex-nowrap gap-2 overflow-x-auto"
         >
-          <div
+          <button
             v-for="name in effects"
             :key="name"
             class="badge badge-lg capitalize opacity-80"
@@ -47,30 +42,16 @@
             @mousedown.prevent="activeEffectType = name"
           >
             {{ name }}
-          </div>
+          </button>
         </div>
 
         <!-- IMAGE PICKER -->
         <div v-if="activeMessageType === 'image'" class="flex flex-col gap-2">
-          <input
-            ref="fileInput"
-            type="file"
-            accept="image/*"
-            hidden
-            @change="handleImageUpload"
-          />
+          <input ref="fileInput" type="file" accept="image/*" hidden @change="handleImageUpload" />
 
-          <div class="flex gap-2 items-center">
-            <button
-              class="btn btn-sm btn-primary btn-soft"
-              @click="fileInput.click()"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-              >
+          <div class="flex items-center gap-2">
+            <button class="btn btn-sm btn-primary btn-soft" @click="fileInput.click()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                 <path
                   fill="none"
                   stroke="currentColor"
@@ -85,19 +66,16 @@
             </button>
             <input
               v-model="imageUrlInput"
-              class="w-full input input-sm rounded-lg placeholder:opacity-60 focus:outline-none"
+              class="input input-sm w-full rounded-lg placeholder:opacity-60 focus:outline-none"
               placeholder="Image url..."
               @input="handleImageUrlInput"
             />
           </div>
           <!-- PREVIEW -->
-          <div v-if="previewUrl" class="relative max-w-[160px]">
+          <div v-if="previewUrl" class="relative max-w-40">
             <img :src="previewUrl" class="rounded-xl border" />
 
-            <button
-              class="btn btn-xs btn-error absolute -top-2 -right-2"
-              @click="clearImage"
-            >
+            <button class="btn btn-xs btn-error absolute -top-2 -right-2" @click="clearImage">
               ✕
             </button>
           </div>
@@ -108,7 +86,7 @@
           <!-- Secret -->
           <input
             v-model="secretKey"
-            class="w-full input input-sm placeholder:opacity-60 focus:outline-none"
+            class="input input-sm w-full placeholder:opacity-60 focus:outline-none"
             placeholder="SecretKey"
           />
         </div>
@@ -116,21 +94,13 @@
     </Transition>
 
     <!-- INPUT BAR -->
-    <div class="max-w-3xl mx-auto flex items-center gap-3">
+    <div class="mx-auto flex max-w-3xl items-center gap-3">
       <button
         class="btn btn-info btn-circle"
         @mousedown.prevent="showInputOptions = !showInputOptions"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-        >
-          <path
-            fill="currentColor"
-            d="M17 16V7H8V5h11v11zm-5 5v-9H3v-2h11v11z"
-          />
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M17 16V7H8V5h11v11zm-5 5v-9H3v-2h11v11z" />
         </svg>
       </button>
 
@@ -139,7 +109,7 @@
         @keyup.enter="sendText"
         placeholder="Type here…"
         :disabled="!canSendMessage"
-        class="flex-1 input rounded-full bg-base-200 border-base-300 focus:outline-none focus:ring-2 focus:ring-primary placeholder:opacity-60"
+        class="input bg-base-200 border-base-300 focus:ring-primary flex-1 rounded-full placeholder:opacity-60 focus:ring-2 focus:outline-none"
       />
 
       <button
@@ -148,13 +118,7 @@
         @click="sendText"
       >
         <span v-if="uploading">...</span>
-        <svg
-          v-else
-          xmlns="http://www.w3.org/2000/svg"
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-        >
+        <svg v-else xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
           <path
             fill="none"
             stroke="currentColor"
@@ -168,20 +132,19 @@
     </div>
   </div>
 </template>
-<script setup>
+<script setup lang="ts">
   import { ref } from "vue";
   import { encryptMessage, generateUUID } from "@/api";
-  import { supabase } from "@/utils/supabase.js";
+  import { supabase } from "@/utils/supabase";
 
   const inputText = ref("");
   const showInputOptions = ref(false);
 
-  const props = defineProps([
-    "canSendMessage",
-    "sendMessage",
-    "myName",
-    "updateName"
-  ]);
+  const props = defineProps(["canSendMessage", "sendMessage", "myName", "updateName"]);
+
+  function updateName(event: Event) {
+    props.updateName((event.target as HTMLInputElement).value);
+  }
 
   const fileInput = ref(null);
   const imageUrlInput = ref("");
@@ -199,7 +162,7 @@
     effect: "Text message with Effects",
     image: "Send an image",
     secret: "Send secret message with key",
-    video: "Play YouTube Video using link"
+    video: "Play YouTube Video using link",
   };
 
   const effects = [
@@ -213,7 +176,7 @@
     "gradient",
     "pulse",
     "neon",
-    "pop"
+    "pop",
   ];
 
   const activeMessageType = ref("text");
@@ -278,9 +241,7 @@
         const fileName = `${generateUUID()}.${ext}`;
         const filePath = `chat/${fileName}`;
 
-        const { error } = await supabase.storage
-          .from("chat-images")
-          .upload(filePath, file);
+        const { error } = await supabase.storage.from("chat-images").upload(filePath, file);
 
         uploading.value = false;
 
@@ -289,9 +250,7 @@
           return;
         }
 
-        const { data } = supabase.storage
-          .from("chat-images")
-          .getPublicUrl(filePath);
+        const { data } = supabase.storage.from("chat-images").getPublicUrl(filePath);
 
         props.sendMessage(`#image:${data.publicUrl} ${message}`);
 

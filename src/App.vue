@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
   import { onMounted } from "vue";
   import { setDefaultTheme } from "@/api/config";
 
@@ -8,9 +8,9 @@
 <template>
   <div
     id="main"
-    class="h-dvh flex flex-col font-body overflow-hidden transition-colors duration-600"
+    class="font-body flex h-dvh flex-col overflow-hidden transition-colors duration-600"
   >
-    <div class="flex-1 flex flex-col overflow-hidden">
+    <div class="flex flex-1 flex-col overflow-hidden">
       <router-view />
     </div>
   </div>

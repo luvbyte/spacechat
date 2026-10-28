@@ -29,20 +29,24 @@ Built with Vue 3, Supabase Realtime, and TailwindCSS (DaisyUI).
 SpaceChat supports special inline commands:
 
 ### 📺 Start a Video
+
 #video:https://youtube.com/watch?v=VIDEO_ID
 
 ### 🖼️ Send an Image
+
 #image:https://image-url.com optional message
 
 ### 🎧 Send Audio (under development)
+
 #audio:https://audio-url.com optional caption
 
 ### 🎭 Text Effect
+
 #effect:shake This text will shake
 
 ### 🕵 Secret Mode
-#secret
 
+#secret
 
 - You can select type from Input Panel Options
 
@@ -82,6 +86,30 @@ VITE_SUPABASE_URL=your_url
 VITE_SUPABASE_ANON_KEY=your_anon_key
 Make sure Realtime is enabled in your Supabase project.
 
+## 📱 Cordova
+
+Cordova wraps the same Vite application for native Android and iOS builds. Install
+the Cordova CLI and the native platform toolchains first.
+
+```bash
+pnpm cordova:add:android
+pnpm cordova:run:android
+```
+
+The Android platform is pinned through `cordova-android` and the existing assets
+in `public/icons` are used for the launcher icon and Android 12+ splash screen.
+
+For iOS, run these commands on macOS with Xcode installed:
+
+```bash
+pnpm cordova:add:ios
+pnpm cordova:run:ios
+```
+
+`pnpm cordova:prepare` creates the Cordova `www` directory from a production
+build. The native `platforms/` and generated `www/` directories are ignored by
+Git.
+
 ---
 
 ## 🛡️ Limitations
@@ -94,4 +122,3 @@ No persistent message history (Realtime only)
 No moderation tools yet
 
 ---
-

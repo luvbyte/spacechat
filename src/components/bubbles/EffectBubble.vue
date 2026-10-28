@@ -1,36 +1,32 @@
 <template>
   <div
-    class="p-2 px-4 rounded-2xl shadow-sm max-w-sm relative overflow-hidden effect-root"
+    class="effect-root relative max-w-sm overflow-hidden rounded-2xl p-2 px-4 shadow-sm"
     :class="[
-      message.self
-        ? 'bg-primary/20 rounded-br-sm'
-        : 'bg-base-100 rounded-bl-sm',
-      effectClass
+      message.self ? 'bg-primary/20 rounded-br-sm' : 'bg-base-100 rounded-bl-sm',
+      effectClass,
     ]"
   >
     <!-- overlays -->
     <div v-if="isConfetti" class="confetti-layer"></div>
-    <div v-if="isEmojiRain" class="emoji-layer">
-      🧡💛💕💞💚💙💓💝💜🤎💖💘🖤🤍🩷🩵
-    </div>
+    <div v-if="isEmojiRain" class="emoji-layer">🧡💛💕💞💚💙💓💝💜🤎💖💘🖤🤍🩷🩵</div>
     <div v-if="isSparkle" class="sparkle-layer"></div>
     <div v-if="isShimmer" class="shimmer-layer"></div>
 
     <!-- text -->
-    <p class="text-[15px] relative z-10" :class="{ 'wave-text': isWave }">
+    <p class="relative z-10 text-[15px]" :class="{ 'wave-text': isWave }">
       {{ message.content.text }}
     </p>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
   import { computed } from "vue";
 
   const props = defineProps({
     message: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   });
 
   const name = computed(() => props.message.content.name);
@@ -72,26 +68,35 @@
 
   /* Glow */
   .ig-glow {
-    box-shadow: 0 0 18px rgba(236, 72, 153, 0.9);
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.18), rgba(168, 85, 247, 0.12));
+
+    border: 1px solid rgba(236, 72, 153, 0.35);
+
+    box-shadow:
+      0 0 6px rgba(236, 72, 153, 0.25),
+      0 0 14px rgba(236, 72, 153, 0.35),
+      0 0 28px rgba(168, 85, 247, 0.18),
+      inset 0 0 8px rgba(255, 255, 255, 0.04);
+
+    animation: glowPulse 2.5s ease-in-out infinite;
   }
 
-  /* Gradient */
-  .ig-gradient {
-    background: linear-gradient(120deg, #ff0066, #ffcc00, #33ccff, #7c3aed);
-    background-size: 400% 400%;
-    color: white;
-    animation: gradientMove 6s ease infinite;
-  }
-
-  @keyframes gradientMove {
-    0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
+  @keyframes glowPulse {
+    0%,
     100% {
-      background-position: 0% 50%;
+      box-shadow:
+        0 0 6px rgba(236, 72, 153, 0.25),
+        0 0 14px rgba(236, 72, 153, 0.35),
+        0 0 28px rgba(168, 85, 247, 0.18),
+        inset 0 0 8px rgba(255, 255, 255, 0.04);
+    }
+
+    50% {
+      box-shadow:
+        0 0 10px rgba(236, 72, 153, 0.45),
+        0 0 22px rgba(236, 72, 153, 0.55),
+        0 0 38px rgba(168, 85, 247, 0.3),
+        inset 0 0 12px rgba(255, 255, 255, 0.08);
     }
   }
 
@@ -211,11 +216,7 @@
   .sparkle-layer {
     position: absolute;
     inset: 0;
-    background: radial-gradient(
-      circle,
-      rgba(255, 255, 255, 0.8) 2px,
-      transparent 3px
-    );
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 2px, transparent 3px);
     background-size: 40px 40px;
     animation: sparkle 1.4s ease infinite;
   }
@@ -236,12 +237,7 @@
   .shimmer-layer {
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-      120deg,
-      transparent,
-      rgba(255, 255, 255, 0.6),
-      transparent
-    );
+    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.6), transparent);
     animation: shimmer 2s infinite;
   }
 

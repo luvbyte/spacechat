@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cause:wght@100..900&family=Jost:ital,wght@0,100..900;1,100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Cause:wght@100..900&family=Jost:ital,wght@0,100..900;1,100..900&display=swap");
 
 @import "tailwindcss";
 @plugin "daisyui" {
@@ -12,31 +12,30 @@
 }
 
 .base-border {
-  @apply border border-base-content/20
+  @apply border-base-content/20 border;
 }
 
 .fscreen {
-  @apply w-full h-full
+  @apply h-full w-full;
 }
 
 h1 {
-  @apply font-heading
+  @apply font-heading;
 }
 
 button {
-  @apply font-heading
+  @apply font-heading cursor-pointer;
 }
 
 /* Hide scrollbar but keep scroll functionality */
 .scrollbar-hide {
   scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none;  /* IE & Edge */
+  -ms-overflow-style: none; /* IE & Edge */
 }
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
 }
-
 
 /* Fade-in animation */
 .fade-in {
@@ -46,10 +45,13 @@ button {
 
 /* Keyframes */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
-
 
 .fade-enter-from,
 .fade-leave-to {
@@ -61,7 +63,7 @@ button {
 }
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity .3s ease;
+  transition: opacity 0.3s ease;
 }
 
 .slide-up-enter-from,
@@ -76,7 +78,7 @@ button {
 }
 .slide-up-enter-active,
 .slide-up-leave-active {
-  transition: all .3s ease;
+  transition: all 0.3s ease;
 }
 
 .slide-down-enter-from,
@@ -91,7 +93,7 @@ button {
 }
 .slide-down-enter-active,
 .slide-down-leave-active {
-  transition: all .3s ease;
+  transition: all 0.3s ease;
 }
 
 .slide-left-enter-from,
@@ -106,7 +108,7 @@ button {
 }
 .slide-left-enter-active,
 .slide-left-leave-active {
-  transition: all .3s ease;
+  transition: all 0.3s ease;
 }
 
 .slide-right-enter-from,
@@ -121,7 +123,7 @@ button {
 }
 .slide-right-enter-active,
 .slide-right-leave-active {
-  transition: all .3s ease;
+  transition: all 0.3s ease;
 }
 
 .scale-enter-from,
@@ -136,7 +138,7 @@ button {
 }
 .scale-enter-active,
 .scale-leave-active {
-  transition: all .25s ease;
+  transition: all 0.25s ease;
 }
 
 .rotate-enter-from,
@@ -151,7 +153,7 @@ button {
 }
 .rotate-enter-active,
 .rotate-leave-active {
-  transition: all .3s ease-out;
+  transition: all 0.3s ease-out;
 }
 
 .expand-enter-from,
@@ -166,25 +168,38 @@ button {
 }
 .expand-enter-active,
 .expand-leave-active {
-  transition: all .3s ease;
+  transition: all 0.3s ease;
   overflow: hidden;
 }
 
-
 .bounce-enter-active {
-  animation: bounceIn .4s;
+  animation: bounceIn 0.4s;
 }
 .bounce-leave-active {
-  animation: bounceOut .3s forwards;
+  animation: bounceOut 0.3s forwards;
 }
 @keyframes bounceIn {
-  0% { transform: scale(.8); opacity: 0; }
-  60% { transform: scale(1.05); opacity: 1; }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 @keyframes bounceOut {
-  0% { transform: scale(1); opacity: 1; }
-  100% { transform: scale(.8); opacity: 0; }
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
 }
 
 .flip-enter-from,
@@ -199,7 +214,7 @@ button {
 }
 .flip-enter-active,
 .flip-leave-active {
-  transition: all .4s ease;
+  transition: all 0.4s ease;
   transform-style: preserve-3d;
 }
 
@@ -215,7 +230,7 @@ button {
 }
 .blur-enter-active,
 .blur-leave-active {
-  transition: all .25s ease;
+  transition: all 0.25s ease;
 }
 
 .pop-enter-from,
@@ -230,7 +245,7 @@ button {
 }
 .pop-enter-active,
 .pop-leave-active {
-  transition: all .2s cubic-bezier(.18,.89,.32,1.28);
+  transition: all 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
 }
 
 /* When element enters */

@@ -7,7 +7,7 @@
       @click="toggle"
       @keydown.enter.prevent="toggle"
       @keydown.esc="close"
-      class="w-full select-none rounded-lg border border-base-content/40 px-4 py-1 text-left transition bg-transparent focus:outline-none focus:ring-2 focus:ring-primary"
+      class="border-base-content/40 focus:ring-primary w-full rounded-lg border bg-transparent px-4 py-1 text-left transition select-none focus:ring-2 focus:outline-none"
       :class="{ 'bg-base-100': isOpen }"
     >
       <span class="text-base-content">
@@ -18,13 +18,13 @@
     <!-- Dropdown -->
     <ul
       v-show="isOpen"
-      class="absolute z-20 mt-1 w-full rounded-lg overflow-hidden border border-base-300 bg-base-100 shadow max-h-64 overflow-y-auto"
+      class="border-base-300 bg-base-100 absolute z-20 mt-1 max-h-64 w-full overflow-hidden overflow-y-auto rounded-lg border shadow"
     >
       <li
         v-for="option in options"
         :key="option.value"
         @click="select(option)"
-        class="cursor-pointer px-4 py-1 hover:bg-base-200"
+        class="hover:bg-base-200 cursor-pointer px-4 py-1"
         :class="{ 'bg-base-200': option.value === modelValue }"
       >
         {{ option.label }}
@@ -33,28 +33,32 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
   import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 
-  const props = defineProps({
-    modelValue: [String, Number],
-    options: {
-      type: Array,
-      required: true
-    },
-    placeholder: {
-      type: String,
-      default: "Select option"
-    }
-  });
+  interface SelectOption {
+    value: string | number;
+    label: string;
+  }
 
-  const emit = defineEmits(["update:modelValue"]);
+  const props = withDefaults(
+    defineProps<{
+      modelValue?: string | number;
+      options: SelectOption[];
+      placeholder?: string;
+    }>(),
+    { placeholder: "Select option" },
+  );
+
+  const emit = defineEmits<{
+    (event: "update:modelValue", value: string | number): void;
+  }>();
 
   const isOpen = ref(false);
-  const button = ref(null);
+  const button = ref<HTMLButtonElement | null>(null);
 
   const selectedLabel = computed(
-    () => props.options.find(o => o.value === props.modelValue)?.label
+    () => props.options.find((o) => o.value === props.modelValue)?.label,
   );
 
   function toggle() {
@@ -65,14 +69,14 @@
     isOpen.value = false;
   }
 
-  function select(option) {
+  function select(option: SelectOption) {
     emit("update:modelValue", option.value);
     close();
   }
 
   // Close on outside click
-  function onClickOutside(e) {
-    if (!button.value?.parentElement.contains(e.target)) {
+  function onClickOutside(e: MouseEvent) {
+    if (!button.value?.parentElement?.contains(e.target as Node)) {
       close();
     }
   }

@@ -1,12 +1,14 @@
 <template>
-  <div
-    class="relative min-w-[80%] min-h-18 bg-base-300 flex flex-col rounded-xl overflow-hidden"
-  >
-    <!-- Image skeleton wrapper -->
-    <div class="flex-1" :class="loading ? 'skeleton' : ''">
+  <div class="bg-base-300 relative w-fit max-w-full overflow-hidden rounded-xl">
+    <!-- Image container with a stable aspect ratio -->
+    <div
+      class="bg-base-200 relative min-h-32 max-w-full min-w-48 overflow-hidden"
+      :class="loading ? 'skeleton' : ''"
+    >
       <img
         :src="message.content.url"
-        class="w-full min-w-64 object-cover transition-opacity duration-300"
+        alt="Shared image"
+        class="block max-h-72 w-auto max-w-full object-contain transition-opacity duration-300"
         :class="loading ? 'opacity-0' : 'opacity-100'"
         loading="lazy"
         @load="onLoaded"
@@ -14,12 +16,17 @@
       />
     </div>
 
-    <div v-if="message.content.message.length" class="p-2">
+    <!-- Optional message caption -->
+    <div
+      v-if="message.content.message?.trim()"
+      class="max-w-full px-3 py-2 text-sm wrap-break-word whitespace-pre-wrap"
+    >
       {{ message.content.message }}
     </div>
   </div>
 </template>
-<script setup>
+
+<script setup lang="ts">
   import { ref } from "vue";
 
   defineProps(["message"]);

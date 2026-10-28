@@ -1,23 +1,16 @@
 <template>
   <div>
-    <div v-if="message.alert" class="fade-in divider m-0 opacity-80 font-heading">
+    <div v-if="message.alert" class="fade-in divider font-heading m-0 opacity-80">
       <div class="badge badge-sm badge-info">
         {{ message.content }}
       </div>
     </div>
     <!-- ROW -->
-    <div
-      v-else
-      class="flex w-full fade-in"
-      :class="message.self ? 'justify-end' : 'justify-start'"
-    >
+    <div v-else class="fade-in flex w-full" :class="message.self ? 'justify-end' : 'justify-start'">
       <!-- CONTENT -->
-      <div
-        class="flex flex-col max-w-[75%]"
-        :class="message.self ? 'items-end' : 'items-start'"
-      >
+      <div class="flex max-w-[75%] flex-col" :class="message.self ? 'items-end' : 'items-start'">
         <!-- USERNAME -->
-        <div v-if="!message.self" class="text-xs opacity-50 mb-1 text-left">
+        <div v-if="!message.self" class="mb-1 text-left text-xs opacity-50">
           {{ message.name }}
         </div>
 
@@ -31,7 +24,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
   import TextBubble from "./bubbles/TextBubble.vue";
   import ImageBubble from "./bubbles/ImageBubble.vue";
   import AudioBubble from "./bubbles/AudioBubble.vue";

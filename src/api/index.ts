@@ -1,91 +1,95 @@
 const DEFAULT_USERNAME = "Someone";
 
-function bytesToBase64(bytes) {
+function bytesToBase64(bytes: Uint8Array): string {
   return btoa(String.fromCharCode(...bytes));
 }
 
-export async function encryptMessage(message, password) {
+function toBufferSource(bytes: Uint8Array): ArrayBuffer {
+  return bytes.slice().buffer as ArrayBuffer;
+}
+
+export async function encryptMessage(
+  message: string,
+  password: string,
+): Promise<{ cipher: string; salt: string; iv: string }> {
   const enc = new TextEncoder();
 
   const salt = crypto.getRandomValues(new Uint8Array(16));
   const iv = crypto.getRandomValues(new Uint8Array(12));
 
-  const keyMaterial = await crypto.subtle.importKey(
-    "raw",
-    enc.encode(password),
-    "PBKDF2",
-    false,
-    ["deriveKey"]
-  );
+  const keyMaterial = await crypto.subtle.importKey("raw", enc.encode(password), "PBKDF2", false, [
+    "deriveKey",
+  ]);
 
   const key = await crypto.subtle.deriveKey(
     {
       name: "PBKDF2",
-      salt,
+      salt: toBufferSource(salt),
       iterations: 100000,
-      hash: "SHA-256"
+      hash: "SHA-256",
     },
     keyMaterial,
     { name: "AES-GCM", length: 256 },
     false,
-    ["encrypt", "decrypt"]
+    ["encrypt", "decrypt"],
   );
 
   const encrypted = await crypto.subtle.encrypt(
-    { name: "AES-GCM", iv },
+    { name: "AES-GCM", iv: toBufferSource(iv) },
     key,
-    enc.encode(message)
+    enc.encode(message),
   );
 
   return {
     cipher: bytesToBase64(new Uint8Array(encrypted)),
     salt: bytesToBase64(salt),
-    iv: bytesToBase64(iv)
+    iv: bytesToBase64(iv),
   };
 }
 
-function base64ToBytes(b64) {
-  return Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+function base64ToBytes(b64: string): Uint8Array {
+  return Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
 }
 
-export async function decryptMessage(cipher, password, salt, iv) {
+export async function decryptMessage(
+  cipher: string,
+  password: string,
+  salt: string,
+  iv: string,
+): Promise<string> {
   const enc = new TextEncoder();
   const dec = new TextDecoder();
 
-  const keyMaterial = await crypto.subtle.importKey(
-    "raw",
-    enc.encode(password),
-    "PBKDF2",
-    false,
-    ["deriveKey"]
-  );
+  const keyMaterial = await crypto.subtle.importKey("raw", enc.encode(password), "PBKDF2", false, [
+    "deriveKey",
+  ]);
 
   const key = await crypto.subtle.deriveKey(
     {
       name: "PBKDF2",
-      salt: base64ToBytes(salt),
+      salt: toBufferSource(base64ToBytes(salt)),
       iterations: 100000,
-      hash: "SHA-256"
+      hash: "SHA-256",
     },
     keyMaterial,
     { name: "AES-GCM", length: 256 },
     false,
-    ["decrypt"]
+    ["decrypt"],
   );
 
   const decrypted = await crypto.subtle.decrypt(
     {
       name: "AES-GCM",
-      iv: base64ToBytes(iv)
+      iv: toBufferSource(base64ToBytes(iv)),
     },
     key,
-    base64ToBytes(cipher)
+    toBufferSource(base64ToBytes(cipher)),
   );
 
   return dec.decode(decrypted);
 }
 
-export function generateUUID() {
+export function generateUUID(): string {
   if (window.crypto && window.crypto.randomUUID) {
     return window.crypto.randomUUID();
   }
@@ -98,7 +102,7 @@ export function generateUUID() {
   });
 }
 
-export function extractYouTubeId(url) {
+export function extractYouTubeId(url: string): string | null {
   try {
     const parsedUrl = new URL(url);
 
@@ -123,12 +127,12 @@ export function extractYouTubeId(url) {
     }
 
     return null;
-  } catch (err) {
+  } catch {
     return null;
   }
 }
 
-export function getClientId() {
+export function getClientId(): string {
   const existing = localStorage.getItem("space-chat-clientID");
   if (existing) return existing;
 
@@ -137,11 +141,10 @@ export function getClientId() {
   return id;
 }
 
-export function getClientUsername() {
+export function getClientUsername(): string {
   const existing = localStorage.getItem("space-chat-userName");
   if (existing) return existing;
 
   localStorage.setItem("space-chat-userName", DEFAULT_USERNAME);
   return DEFAULT_USERNAME;
 }
-

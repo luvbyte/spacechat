@@ -10,6 +10,9 @@ lerna-debug.log*
 node_modules
 .DS_Store
 dist
+www
+platforms
+plugins
 dist-ssr
 coverage
 *.local

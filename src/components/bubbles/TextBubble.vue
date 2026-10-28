@@ -1,7 +1,7 @@
 <template>
   <!-- TEXT -->
   <div
-    class="px-4 py-2 rounded-2xl shadow-sm text-[15px] leading-relaxed"
+    class="rounded-2xl px-4 py-2 text-[15px] leading-relaxed shadow-sm"
     :class="
       message.self
         ? 'bg-primary text-primary-content rounded-br-sm'
@@ -12,6 +12,6 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
   defineProps(["message"]);
 </script>

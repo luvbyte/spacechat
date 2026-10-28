@@ -1,0 +1,9 @@
+node_modules/
+dist/
+coverage/
+.output/
+.nuxt/
+.vite/
+package-lock.json
+pnpm-lock.yaml
+yarn.lock

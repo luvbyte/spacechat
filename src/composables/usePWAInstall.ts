@@ -1,10 +1,11 @@
 import { ref } from "vue";
 
-const deferredPrompt = ref(null);
+const deferredPrompt = ref<BeforeInstallPromptEvent | null>(null);
 const isInstallable = ref(false);
 
 // listen event only once
-window.addEventListener("beforeinstallprompt", e => {
+window.addEventListener("beforeinstallprompt", (event: Event) => {
+  const e = event as BeforeInstallPromptEvent;
   e.preventDefault();
   deferredPrompt.value = e;
   isInstallable.value = true;
@@ -24,8 +25,13 @@ export function usePWAInstall() {
     const choice = await deferredPrompt.value.userChoice;
 
     if (choice.outcome === "accepted") {
-      if ("toast" in window) {
-        new Toast("Installed Succesfully").show();
+      if ("Toast" in window) {
+        const ToastConstructor = (
+          window as Window & {
+            Toast: new (message: string) => { show(): void };
+          }
+        ).Toast;
+        new ToastConstructor("Installed Succesfully").show();
       }
     } else {
       // console.log("PWA dismissed.");
@@ -38,6 +44,6 @@ export function usePWAInstall() {
 
   return {
     installPWA,
-    isInstallable
+    isInstallable,
   };
 }

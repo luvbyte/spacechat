@@ -1,83 +1,79 @@
 <template>
-  <div class="flex-1 flex flex-col overflow-hidden">
-    <!-- Space Join Bar -->
-    <div
-      class="p-2 py-3 bg-base-200 text-base-content flex items-center justify-between gap-2"
-    >
-      <button class="shrink-0 text-lg font-bold" @click="showSidebar = true">
-        ⌥ Space
+  <div class="flex flex-1 flex-col overflow-hidden">
+    <div class="bg-primary text-primary-content flex items-center justify-between p-2 py-3">
+      <h1 class="font-heading text-2xl">⌥ Spacechat</h1>
+      <!-- Themes -->
+      <button class="btn btn-sm btn-primary" @click="showSidebar = true">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <path
+            fill="currentColor"
+            d="M15.22 4.75L7.87 7.79l4.96 11.96l7.35-3.05zM11 10c-.55 0-1-.45-1-1s.45-1 1-1s1 .45 1 1s-.45 1-1 1"
+            opacity="0.3"
+          />
+          <path
+            fill="currentColor"
+            d="m3.87 11.18l-2.43 5.86c-.41 1.02.08 2.19 1.09 2.61l1.34.56zm18.16 4.77L17.07 3.98a2.01 2.01 0 0 0-1.81-1.23c-.26 0-.53.04-.79.15L7.1 5.95a2 2 0 0 0-1.08 2.6l4.96 11.97a2 2 0 0 0 2.6 1.08l7.36-3.05a1.994 1.994 0 0 0 1.09-2.6m-9.2 3.8L7.87 7.79l7.35-3.04h.01l4.95 11.95z"
+          />
+          <circle cx="11" cy="9" r="1" fill="currentColor" />
+          <path fill="currentColor" d="m9.33 21.75l-3.45-8.34v6.34c0 1.1.9 2 2 2z" />
+        </svg>
       </button>
+    </div>
 
+    <!-- Space Join Bar -->
+    <div class="bg-base-200 text-base-content flex items-center justify-between gap-2 p-2 py-3">
       <input
         v-model="spaceInput"
         @keyup.enter="changeSpace(spaceInput)"
-        class="input input-sm w-full sm:max-w-sm rounded-full bg-transparent focus:outline-none focus:ring-2 focus:ring-primary font-semibold opacity-60 focus:opacity-100"
+        class="input input-sm focus:ring-primary w-full rounded-full bg-transparent font-semibold opacity-60 focus:opacity-100 focus:ring-2 focus:outline-none sm:max-w-sm"
       />
 
-      <div class="flex gap-1 items-center">
-        <button
-          class="btn btn-sm btn-primary rounded-full px-5"
-          @click="changeSpace(spaceInput)"
-        >
+      <div class="flex items-center gap-1">
+        <!-- Join -->
+        <button class="btn btn-sm btn-primary rounded-full px-5" @click="changeSpace(spaceInput)">
           Join
         </button>
-        <button
-          class="btn btn-sm btn-info rounded-full px-5"
-          @click="inviteSpace"
+
+        <!-- Invite -->
+        <button class="btn btn-sm btn-info rounded-full px-5" @click="inviteSpace">Invite</button>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="flex min-h-0 flex-1 flex-col overflow-hidden md:flex-row">
+      <!-- Video panel: top on mobile, left on desktop -->
+      <section
+        v-if="videoState.visible"
+        class="md:border-base-content/20 w-full shrink-0 bg-black md:flex md:h-full md:w-[50%] md:flex-col md:justify-center md:border-r"
+      >
+        <div class="relative mx-auto aspect-video w-full max-w-5xl md:max-w-none">
+          <div id="yt-player" class="absolute inset-0 h-full w-full"></div>
+        </div>
+      </section>
+
+      <!-- Chat panel: below on mobile, right on desktop -->
+      <section class="flex min-h-0 min-w-0 flex-1 flex-col">
+        <div
+          ref="chatBox"
+          class="border-base-content/20 flex min-h-0 flex-1 flex-col gap-3 overflow-x-hidden overflow-y-auto p-3"
+          :class="{ 'md:mx-auto md:w-[60%] md:border-x': !videoState.visible }"
         >
-          Invite
-        </button>
-        <button class="btn btn-sm btn-secondary" @click="showSidebar = true">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-          >
-            <path
-              fill="currentColor"
-              d="M15.22 4.75L7.87 7.79l4.96 11.96l7.35-3.05zM11 10c-.55 0-1-.45-1-1s.45-1 1-1s1 .45 1 1s-.45 1-1 1"
-              opacity="0.3"
-            />
-            <path
-              fill="currentColor"
-              d="m3.87 11.18l-2.43 5.86c-.41 1.02.08 2.19 1.09 2.61l1.34.56zm18.16 4.77L17.07 3.98a2.01 2.01 0 0 0-1.81-1.23c-.26 0-.53.04-.79.15L7.1 5.95a2 2 0 0 0-1.08 2.6l4.96 11.97a2 2 0 0 0 2.6 1.08l7.36-3.05a1.994 1.994 0 0 0 1.09-2.6m-9.2 3.8L7.87 7.79l7.35-3.04h.01l4.95 11.95z"
-            />
-            <circle cx="11" cy="9" r="1" fill="currentColor" />
-            <path
-              fill="currentColor"
-              d="m9.33 21.75l-3.45-8.34v6.34c0 1.1.9 2 2 2z"
-            />
-          </svg>
-        </button>
-      </div>
+          <Bubble v-for="(message, i) in messages" :key="i" :message="message" />
+        </div>
+      </section>
     </div>
 
-    <!-- Video -->
-    <div v-if="videoState.visible" class="w-full bg-black">
-      <div class="relative w-full md:w-1/2 md:mx-auto bg-black aspect-video">
-        <div class="fscreen" id="yt-player"></div>
-      </div>
-    </div>
-
-    <!-- Chat Area -->
-    <div
-      ref="chatBox"
-      class="flex-1 md:w-[80%] md:border-x border-base-content/20 md:mx-auto flex flex-col overflow-y-auto overflow-x-hidden p-2 py-4 gap-3"
-    >
-      <Bubble v-for="(message, i) in messages" :key="i" :message />
-    </div>
-
+    <!-- Input Box -->
     <InputBox
-      :canSendMessage
-      :sendMessage
-      :myName
+      :canSendMessage="canSendMessage"
+      :sendMessage="sendMessage"
+      :myName="myName"
       :updateName="changeUsername"
     />
 
     <!-- Sidebar -->
     <div
-      class="fixed inset-0 z-20 full overflow-hidden"
+      class="full fixed inset-0 z-20 overflow-hidden"
       @click.self="showSidebar = false"
       :class="{ 'pointer-events-none -z-20': !showSidebar }"
     >
@@ -89,10 +85,10 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
   import { ref, onBeforeMount, onBeforeUnmount, nextTick, watch } from "vue";
   import { useRoute, useRouter } from "vue-router";
-  import { supabase } from "@/utils/supabase.js";
+  import { supabase } from "@/utils/supabase";
 
   import { extractYouTubeId, getClientId, getClientUsername } from "@/api";
 
@@ -116,7 +112,7 @@
     visible: false,
     videoId: null,
     currentTime: 0,
-    playing: false
+    playing: false,
   });
 
   const player = ref(null);
@@ -209,8 +205,8 @@
         action,
         time,
         videoId: videoId ?? videoState.value.videoId,
-        state
-      }
+        state,
+      },
     });
   }
 
@@ -237,8 +233,8 @@
       playerVars: {
         autoplay: 1,
         start,
-        mute: 1
-      }
+        mute: 1,
+      },
     });
 
     player.value.on("ready", async () => {
@@ -262,7 +258,7 @@
 
     let lastTime = 0;
 
-    player.value.on("stateChange", async event => {
+    player.value.on("stateChange", async (event) => {
       if (suppressBroadcast || !hasControls.value) return;
 
       const time = await player.value.getCurrentTime();
@@ -369,7 +365,7 @@
       name: "System",
       text: reason,
       self: false,
-      alert: true
+      alert: true,
     });
 
     // Broadcast to others
@@ -383,7 +379,7 @@
     spaceChannel.value.send({
       event: "message",
       type: "broadcast",
-      payload: { name: `${myName.value} (${clientId})`, text: message }
+      payload: { name: `${myName.value} (${clientId})`, text: message },
     });
   }
 
@@ -399,7 +395,7 @@
       self: msg.self,
       alert: msg.alert,
       type: "text",
-      content: msg.text
+      content: msg.text,
     };
 
     // Special Case
@@ -419,7 +415,7 @@
         message.type = "image";
         message.content = {
           url,
-          message: rest
+          message: rest,
         };
       }
       // AUDIO: #audio:url caption (development)
@@ -429,7 +425,7 @@
         message.type = "audio";
         message.content = {
           url,
-          caption: rest
+          caption: rest,
         };
       }
 
@@ -440,7 +436,7 @@
         message.type = "effect";
         message.content = {
           name,
-          text: rest
+          text: rest,
         };
       } else if (commandPart.startsWith("secret")) {
         message.type = "secret";
@@ -468,7 +464,7 @@
       name: payload.name,
       text: payload.text,
       self: false,
-      alert: false
+      alert: false,
     });
   }
 
@@ -482,7 +478,7 @@
       name: "You",
       text: message,
       self: true,
-      alert: false
+      alert: false,
     };
 
     // if video
@@ -507,7 +503,7 @@
 
       // Become host
       hasControls.value = true;
-      spaceChannel.value.track({ role: "host" });
+      spaceChannel.value.track({ role: "host" } as Record<string, unknown>);
 
       // ALWAYS reset locally (but keep host role)
       if (player.value) {
@@ -533,21 +529,28 @@
   }
 
   // ---------------- Space functions
+
   async function inviteSpace() {
     const url = window.location.href;
 
     try {
-      if (navigator.share) {
+      if (window.matchMedia("(pointer: fine)").matches) {
+        await navigator.clipboard.writeText(`Join me here 👋\n${url}`);
+        systemMessage("Invite link copied!");
+      } else if (navigator.share) {
         await navigator.share({
           title: document.title,
           text: "Join me here 👋",
-          url
+          url,
         });
       } else {
-        await navigator.clipboard.writeText(url);
+        await navigator.clipboard.writeText(`Join me here 👋\n${url}`);
+        systemMessage("Invite link copied!");
       }
     } catch (err) {
-      console.error("Sharing failed:", err);
+      if (err.name !== "AbortError") {
+        console.error("Sharing failed:", err);
+      }
     }
   }
 
@@ -574,7 +577,7 @@
     if (route.params.name !== name) {
       router.push({
         name: "space",
-        params: { name }
+        params: { name },
       });
     }
 
@@ -584,8 +587,8 @@
       .channel(name, {
         config: {
           broadcast: { self: false },
-          presence: { key: clientId }
-        }
+          presence: { key: clientId },
+        },
       })
       .on("broadcast", { event: "message" }, onMessage)
       .on("broadcast", { event: "video" }, onVideoEvent)
@@ -596,7 +599,7 @@
 
         for (const [key, users] of Object.entries(state)) {
           for (const user of users) {
-            if (user.role === "host") {
+            if ((user as { role?: string }).role === "host") {
               hostId = key;
               break;
             }
@@ -611,7 +614,7 @@
 
     spaceChannel.value = channel;
 
-    channel.subscribe(status => {
+    channel.subscribe((status) => {
       let text = "";
 
       if (status === "SUBSCRIBED") {
@@ -639,7 +642,8 @@
   }
 
   onBeforeMount(() => {
-    const initial = route.params.name ?? "Mars";
+    const initialParam = route.params.name;
+    const initial = Array.isArray(initialParam) ? initialParam[0] : (initialParam ?? "Mars");
 
     spaceInput.value = initial;
     changeSpace(initial);
@@ -652,11 +656,11 @@
   // watch URL changes (/space/xxx)
   watch(
     () => route.params.name,
-    newName => {
+    (newName) => {
       if (typeof newName === "string" && newName !== activeSpace.value) {
         changeSpace(newName);
       }
-    }
+    },
   );
 
   // cleanup on destroy

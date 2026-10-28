@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget id="com.luvbyte.spacechat" version="0.0.3" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <name>SpaceChat</name>
+  <description>Real-time collaborative spaces and chat.</description>
+  <author email="support@luvbyte.dev" href="https://github.com/luvbyte">luvbyte</author>
+  <engine name="android" spec="13.0.0" />
+  <content src="index.html" />
+  <access origin="*" />
+  <icon src="public/icons/icon-512x512.png" />
+  <allow-navigation href="https://*/*" />
+  <allow-navigation href="http://*/*" />
+  <preference name="Scheme" value="https" />
+  <preference name="hostname" value="app.spacechat" />
+  <preference name="DisallowOverscroll" value="true" />
+  <preference name="SplashScreenDelay" value="0" />
+  <preference name="AutoHideSplashScreen" value="true" />
+  <preference name="SplashMaintainAspectRatio" value="true" />
+  <preference name="SplashShowOnlyFirstTime" value="false" />
+  <platform name="android">
+    <preference name="AndroidWindowSplashScreenAnimatedIcon" value="public/icons/icon-512x512.png" />
+    <preference name="AndroidWindowSplashScreenBackground" value="#ffffff" />
+    <icon density="ldpi" src="public/icons/icon-48x48.png" />
+    <icon density="mdpi" src="public/icons/icon-72x72.png" />
+    <icon density="hdpi" src="public/icons/icon-96x96.png" />
+    <icon density="xhdpi" src="public/icons/icon-144x144.png" />
+    <icon density="xxhdpi" src="public/icons/icon-192x192.png" />
+    <icon density="xxxhdpi" src="public/icons/icon-512x512.png" />
+    <allow-intent href="market:*" />
+  </platform>
+  <platform name="ios">
+    <allow-intent href="itms:*" />
+    <allow-intent href="itms-apps:*" />
+  </platform>
+</widget>
